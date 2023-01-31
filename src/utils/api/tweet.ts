@@ -1,5 +1,5 @@
 import type { TrpcContext } from "./helpers";
-import { RouterInputs } from "../api";
+import type { RouterInputs } from "../api";
 
 export const createTweet = async (
   ctx: TrpcContext,
@@ -25,4 +25,59 @@ export const createTweet = async (
     },
   });
   return tweet;
+};
+
+export const retweet = async (
+  ctx: TrpcContext,
+  input: RouterInputs["tweet"]["retweet"]
+) => {
+  const { prisma, session } = ctx;
+  const { tweetId } = input;
+  const userId = session?.user?.id;
+  const retweet = await prisma.retweet.create({
+    data: {
+      tweet: {
+        connect: {
+          id: tweetId,
+        },
+      },
+      author: {
+        connect: {
+          id: userId,
+        },
+      },
+    },
+  });
+  return retweet;
+};
+
+export const isRetweeted = async (
+  ctx: TrpcContext,
+  input: RouterInputs["tweet"]["retweet"]
+) => {
+  const { prisma, session } = ctx;
+  const { tweetId } = input;
+  const userId = session?.user?.id;
+  return !!(await prisma.retweet.findFirst({
+    where: {
+      tweetId,
+      authorId: userId,
+    },
+  }));
+};
+
+export const unRetweet = async (
+  ctx: TrpcContext,
+  input: RouterInputs["tweet"]["retweet"]
+) => {
+  const { prisma, session } = ctx;
+  const { tweetId } = input;
+  const userId = session?.user?.id;
+  const deleteRetweet = await prisma.retweet.deleteMany({
+    where: {
+      tweetId,
+      authorId: userId,
+    },
+  });
+  return deleteRetweet;
 };

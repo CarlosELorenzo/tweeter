@@ -10,3 +10,10 @@ export const tweetSchema = z.object({
   parentTweetId: z.string().cuid().nullish(),
 });
 
+export const tweetActionSchema = z.object({
+  tweetId: z
+    .string({
+      required_error: "Tweet ID is required",
+    })
+    .cuid(),
+});
