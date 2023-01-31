@@ -19,4 +19,10 @@ export const tweetRouter = createTRPCRouter({
       if (await isRetweeted(ctx, input)) await unRetweet(ctx, input);
       else await retweet(ctx, input);
     }),
+  save: protectedProcedure
+    .input(tweetActionSchema)
+    .mutation(async ({ ctx, input }) => {
+      if (await isSaved(ctx, input)) await unSave(ctx, input);
+      else await save(ctx, input);
+    }),
 });

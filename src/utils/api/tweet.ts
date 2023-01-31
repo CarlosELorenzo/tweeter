@@ -81,3 +81,58 @@ export const unRetweet = async (
   });
   return deleteRetweet;
 };
+
+export const save = async (
+  ctx: TrpcContext,
+  input: RouterInputs["tweet"]["save"]
+) => {
+  const { prisma, session } = ctx;
+  const { tweetId } = input;
+  const userId = session?.user?.id;
+  const save = await prisma.savedTweet.create({
+    data: {
+      tweet: {
+        connect: {
+          id: tweetId,
+        },
+      },
+      author: {
+        connect: {
+          id: userId,
+        },
+      },
+    },
+  });
+  return save;
+};
+
+export const isSaved = async (
+  ctx: TrpcContext,
+  input: RouterInputs["tweet"]["save"]
+) => {
+  const { prisma, session } = ctx;
+  const { tweetId } = input;
+  const userId = session?.user?.id;
+  return !!(await prisma.savedTweet.findFirst({
+    where: {
+      tweetId,
+      authorId: userId,
+    },
+  }));
+};
+
+export const unSave = async (
+  ctx: TrpcContext,
+  input: RouterInputs["tweet"]["save"]
+) => {
+  const { prisma, session } = ctx;
+  const { tweetId } = input;
+  const userId = session?.user?.id;
+  const deleteSave = await prisma.savedTweet.deleteMany({
+    where: {
+      tweetId,
+      authorId: userId,
+    },
+  });
+  return deleteSave;
+};
