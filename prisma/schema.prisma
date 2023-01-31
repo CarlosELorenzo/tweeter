@@ -49,6 +49,7 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+    tweets        Tweet[]
 }
 
 model VerificationToken {
@@ -57,4 +58,16 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Tweet {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    content   String
+    author    User     @relation(fields: [authorId], references: [id])
+    authorId  String
+    parent    Tweet?   @relation("RepliesToTweet", fields: [parentId], references: [id])
+    parentId  String?
+    replies   Tweet[]  @relation("RepliesToTweet")
 }
