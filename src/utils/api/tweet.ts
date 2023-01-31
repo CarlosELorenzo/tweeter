@@ -136,3 +136,58 @@ export const unSave = async (
   });
   return deleteSave;
 };
+
+export const like = async (
+  ctx: TrpcContext,
+  input: RouterInputs["tweet"]["like"]
+) => {
+  const { prisma, session } = ctx;
+  const { tweetId } = input;
+  const userId = session?.user?.id;
+  const like = await prisma.like.create({
+    data: {
+      tweet: {
+        connect: {
+          id: tweetId,
+        },
+      },
+      author: {
+        connect: {
+          id: userId,
+        },
+      },
+    },
+  });
+  return like;
+};
+
+export const isLiked = async (
+  ctx: TrpcContext,
+  input: RouterInputs["tweet"]["like"]
+) => {
+  const { prisma, session } = ctx;
+  const { tweetId } = input;
+  const userId = session?.user?.id;
+  return !!(await prisma.like.findFirst({
+    where: {
+      tweetId,
+      authorId: userId,
+    },
+  }));
+};
+
+export const unLike = async (
+  ctx: TrpcContext,
+  input: RouterInputs["tweet"]["like"]
+) => {
+  const { prisma, session } = ctx;
+  const { tweetId } = input;
+  const userId = session?.user?.id;
+  const deleteLike = await prisma.like.deleteMany({
+    where: {
+      tweetId,
+      authorId: userId,
+    },
+  });
+  return deleteLike;
+};

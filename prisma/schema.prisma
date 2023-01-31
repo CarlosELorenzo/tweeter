@@ -52,6 +52,7 @@ model User {
     tweets        Tweet[]
     retweets      Retweet[]
     savedTweets   SavedTweet[]
+    likes         Like[]
 }
 
 model VerificationToken {
@@ -73,6 +74,7 @@ model Tweet {
     parentId  String?
     replies   Tweet[]  @relation("RepliesToTweet")
     retweets  Retweet[]
+    likes     Like[]
     saves     SavedTweet[]
 }
 
@@ -98,3 +100,13 @@ model SavedTweet {
     @@unique([authorId, tweetId])
 }
 
+model Like {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    author    User     @relation(fields: [authorId], references: [id])
+    authorId  String
+    tweet     Tweet    @relation(fields: [tweetId], references: [id])
+    tweetId   String
+    @@unique([authorId, tweetId])
+}
