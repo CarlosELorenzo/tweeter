@@ -1,10 +1,23 @@
 import type { TrpcContext } from "./helpers";
-import type { RouterInputs } from "../api";
+import type { z } from "zod";
+import type {
+  listTweetSchema,
+  tweetActionSchema,
+  tweetSchema,
+} from "../schemas/tweet";
 
-export const createTweet = async (
-  ctx: TrpcContext,
-  input: RouterInputs["tweet"]["create"]
-) => {
+type CreateTweetInput = {
+  ctx: TrpcContext;
+  input: z.infer<typeof tweetSchema>;
+};
+
+
+type TweetActionInput = {
+  ctx: TrpcContext;
+  input: z.infer<typeof tweetActionSchema>;
+};
+
+export const createTweet = async ({ ctx, input }: CreateTweetInput) => {
   const { prisma, session } = ctx;
   const { content, parentTweetId } = input;
   const tweet = await prisma.tweet.create({
@@ -51,10 +64,10 @@ export const retweet = async (
   return retweet;
 };
 
-export const isRetweeted = async (
-  ctx: TrpcContext,
-  input: RouterInputs["tweet"]["retweet"]
-) => {
+export const isRetweeted = async ({
+  ctx,
+  input,
+}: TweetActionInput): Promise<boolean> => {
   const { prisma, session } = ctx;
   const { tweetId } = input;
   const userId = session?.user?.id;
@@ -66,10 +79,7 @@ export const isRetweeted = async (
   }));
 };
 
-export const unRetweet = async (
-  ctx: TrpcContext,
-  input: RouterInputs["tweet"]["retweet"]
-) => {
+export const unRetweet = async ({ ctx, input }: TweetActionInput) => {
   const { prisma, session } = ctx;
   const { tweetId } = input;
   const userId = session?.user?.id;
@@ -82,10 +92,7 @@ export const unRetweet = async (
   return deleteRetweet;
 };
 
-export const save = async (
-  ctx: TrpcContext,
-  input: RouterInputs["tweet"]["save"]
-) => {
+export const save = async ({ ctx, input }: TweetActionInput) => {
   const { prisma, session } = ctx;
   const { tweetId } = input;
   const userId = session?.user?.id;
@@ -106,10 +113,7 @@ export const save = async (
   return save;
 };
 
-export const isSaved = async (
-  ctx: TrpcContext,
-  input: RouterInputs["tweet"]["save"]
-) => {
+export const isSaved = async ({ ctx, input }: TweetActionInput) => {
   const { prisma, session } = ctx;
   const { tweetId } = input;
   const userId = session?.user?.id;
@@ -121,10 +125,7 @@ export const isSaved = async (
   }));
 };
 
-export const unSave = async (
-  ctx: TrpcContext,
-  input: RouterInputs["tweet"]["save"]
-) => {
+export const unSave = async ({ ctx, input }: TweetActionInput) => {
   const { prisma, session } = ctx;
   const { tweetId } = input;
   const userId = session?.user?.id;
@@ -137,10 +138,7 @@ export const unSave = async (
   return deleteSave;
 };
 
-export const like = async (
-  ctx: TrpcContext,
-  input: RouterInputs["tweet"]["like"]
-) => {
+export const like = async ({ ctx, input }: TweetActionInput) => {
   const { prisma, session } = ctx;
   const { tweetId } = input;
   const userId = session?.user?.id;
@@ -161,10 +159,7 @@ export const like = async (
   return like;
 };
 
-export const isLiked = async (
-  ctx: TrpcContext,
-  input: RouterInputs["tweet"]["like"]
-) => {
+export const isLiked = async ({ ctx, input }: TweetActionInput) => {
   const { prisma, session } = ctx;
   const { tweetId } = input;
   const userId = session?.user?.id;
@@ -176,10 +171,7 @@ export const isLiked = async (
   }));
 };
 
-export const unLike = async (
-  ctx: TrpcContext,
-  input: RouterInputs["tweet"]["like"]
-) => {
+export const unLike = async ({ ctx, input }: TweetActionInput) => {
   const { prisma, session } = ctx;
   const { tweetId } = input;
   const userId = session?.user?.id;
