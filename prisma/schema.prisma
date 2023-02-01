@@ -50,6 +50,8 @@ model User {
     accounts      Account[]
     sessions      Session[]
     tweets        Tweet[]
+    follows       Follow[]  @relation("follower")
+    followers     Follow[]  @relation("following")
     retweets      Retweet[]
     savedTweets   SavedTweet[]
     likes         Like[]
@@ -109,4 +111,15 @@ model Like {
     tweet     Tweet    @relation(fields: [tweetId], references: [id])
     tweetId   String
     @@unique([authorId, tweetId])
+}
+
+model Follow {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    follower  User     @relation("follower",fields: [followerId], references: [id])
+    followerId String
+    following User     @relation("following",fields: [followingId], references: [id])
+    followingId String
+    @@unique([followerId, followingId])
 }
