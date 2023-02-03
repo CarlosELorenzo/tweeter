@@ -1,3 +1,4 @@
+import { TweetListType } from "@utils/api/tweet/requests";
 import { z } from "zod";
 
 export const tweetSchema = z.object({
@@ -16,4 +17,11 @@ export const tweetActionSchema = z.object({
       required_error: "Tweet ID is required",
     })
     .cuid(),
+});
+
+export const listTweetSchema = z.object({
+  cursor: z.string().nullish(),
+  limit: z.number().min(1).max(100).default(10),
+  userId: z.string().nullish(),
+  type: z.nativeEnum(TweetListType).default(TweetListType.EXPLORE),
 });
