@@ -3,17 +3,19 @@ import {
   interactionHandler,
   InteractionType,
   list,
+  get,
 } from "@utils/api/tweet";
 import {
   listTweetSchema,
   tweetActionSchema,
-  tweetSchema,
+  createTweetSchema,
+  getTweetSchema,
 } from "@utils/schemas/tweet";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const tweetRouter = createTRPCRouter({
-  create: protectedProcedure.input(tweetSchema).mutation(createTweet),
-
+  create: protectedProcedure.input(createTweetSchema).mutation(createTweet),
+  get: publicProcedure.input(getTweetSchema).query(get),
   list: publicProcedure.input(listTweetSchema).query(list),
   retweet: protectedProcedure
     .input(tweetActionSchema)

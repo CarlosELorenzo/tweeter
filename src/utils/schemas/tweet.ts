@@ -1,7 +1,7 @@
 import { TweetListType } from "@utils/api/tweet/requests";
 import { z } from "zod";
 
-export const tweetSchema = z.object({
+export const createTweetSchema = z.object({
   content: z
     .string({
       required_error: "Tweet cannot be empty",
@@ -9,6 +9,10 @@ export const tweetSchema = z.object({
     .min(1)
     .max(140),
   parentTweetId: z.string().cuid().nullish(),
+});
+
+export const getTweetSchema = z.object({
+  id: z.string().cuid(),
 });
 
 export const tweetActionSchema = z.object({

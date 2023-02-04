@@ -50,6 +50,20 @@ export const createTweetRequest = (
   },
 });
 
+export const getTweetRequest = (id: string) => ({
+  where: {
+    id,
+  },
+  include: {
+    replies: true,
+    retweets: true,
+    likes: true,
+    author: true,
+    saves: true,
+    parent: true,
+  },
+});
+
 export const getInteractionRequest = (
   tweetId: string,
   authorId: string,

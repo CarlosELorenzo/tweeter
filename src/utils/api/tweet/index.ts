@@ -5,17 +5,24 @@ import type { z } from "zod";
 import type {
   listTweetSchema,
   tweetActionSchema,
-  tweetSchema,
+  createTweetSchema,
+  getTweetSchema,
 } from "../../schemas/tweet";
 import {
   createTweetRequest,
   getInteractionRequest,
   getTweetListRequest,
+  getTweetRequest,
 } from "./requests";
 
 type CreateTweetInput = {
   ctx: TrpcContext;
-  input: z.infer<typeof tweetSchema>;
+  input: z.infer<typeof createTweetSchema>;
+};
+
+type GetTweetInputs = {
+  ctx: TrpcContext;
+  input: z.infer<typeof getTweetSchema>;
 };
 
 type ListTweetsInput = {
@@ -50,6 +57,15 @@ export const createTweet = async ({ ctx, input }: CreateTweetInput) => {
     session?.user?.id as string
   );
   const tweet = await prisma.tweet.create(createRequest);
+  return tweet;
+};
+
+export const get = async ({ ctx, input }: GetTweetInputs) => {
+  const { prisma } = ctx;
+  const { id } = input;
+
+  const getRequest = getTweetRequest(id);
+  const tweet = await prisma.tweet.findUnique(getRequest);
   return tweet;
 };
 
