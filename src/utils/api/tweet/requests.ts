@@ -31,7 +31,9 @@ interface TweetListRequestArgs {
 export const createTweetRequest = (
   content: string,
   parentTweetId: string | null | undefined,
-  authorId: string
+  image: string | null | undefined,
+  authorId: string,
+  privateReply: boolean
 ) => ({
   data: {
     content,
@@ -40,6 +42,7 @@ export const createTweetRequest = (
         id: authorId,
       },
     },
+    privateReply,
     parent: parentTweetId
       ? {
           connect: {
@@ -47,6 +50,7 @@ export const createTweetRequest = (
           },
         }
       : undefined,
+    image,
   },
 });
 

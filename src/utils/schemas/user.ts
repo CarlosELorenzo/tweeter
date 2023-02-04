@@ -11,3 +11,8 @@ export const editUserSchema = z.object({
   bannerImage: z.string().min(1).nullish(),
   bio: z.string().min(1).nullish(),
 });
+
+export const getFollowerSchema = z.object({
+  followerId: z.string().cuid(),
+  followingId: z.string().cuid(),
+});

@@ -77,9 +77,11 @@ model Tweet {
     parent    Tweet?   @relation("RepliesToTweet", fields: [parentId], references: [id])
     parentId  String?
     replies   Tweet[]  @relation("RepliesToTweet")
+    privateReply Boolean
     retweets  Retweet[]
     likes     Like[]
     saves     SavedTweet[]
+    image     String?
 }
 
 model Retweet {

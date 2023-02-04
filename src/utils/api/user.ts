@@ -1,5 +1,9 @@
 import type { z } from "zod";
-import type { editUserSchema, getUserSchema } from "../schemas/user";
+import type {
+  editUserSchema,
+  getUserSchema,
+  getFollowerSchema,
+} from "@utils/schemas/user";
 import type { TrpcContext } from "./helpers";
 
 type UserRouterInputs = {
@@ -10,6 +14,11 @@ type UserRouterInputs = {
 type EditUserRouterInputs = {
   ctx: TrpcContext;
   input: z.infer<typeof editUserSchema>;
+};
+
+type getFollowerRouterInputs = {
+  ctx: TrpcContext;
+  input: z.infer<typeof getFollowerSchema>;
 };
 
 export const getUser = async ({ ctx, input }: UserRouterInputs) => {
@@ -88,4 +97,18 @@ export const editUser = async ({ ctx, input }: EditUserRouterInputs) => {
     data,
   });
   return user;
+};
+
+export const isFollower = async ({ ctx, input }: getFollowerRouterInputs) => {
+  const { prisma } = ctx;
+  const { followerId, followingId } = input;
+  const follower = await prisma.follow.findUnique({
+    where: {
+      followerId_followingId: {
+        followerId,
+        followingId,
+      },
+    },
+  });
+  return !!follower;
 };

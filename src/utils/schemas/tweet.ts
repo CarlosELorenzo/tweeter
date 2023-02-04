@@ -9,6 +9,8 @@ export const createTweetSchema = z.object({
     .min(1)
     .max(140),
   parentTweetId: z.string().cuid().nullish(),
+  privateReply: z.boolean().default(false),
+  image: z.string().url().nullish(),
 });
 
 export const getTweetSchema = z.object({

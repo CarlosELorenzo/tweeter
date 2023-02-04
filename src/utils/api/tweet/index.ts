@@ -7,13 +7,15 @@ import type {
   tweetActionSchema,
   createTweetSchema,
   getTweetSchema,
-} from "../../schemas/tweet";
+} from "@utils/schemas/tweet";
 import {
   createTweetRequest,
   getInteractionRequest,
   getTweetListRequest,
   getTweetRequest,
 } from "./requests";
+import { TRPCError } from "@trpc/server";
+import { isFollower } from "../user";
 
 type CreateTweetInput = {
   ctx: TrpcContext;
@@ -49,15 +51,40 @@ export enum InteractionAction {
 
 export const createTweet = async ({ ctx, input }: CreateTweetInput) => {
   const { prisma, session } = ctx;
-  const { content, parentTweetId } = input;
+  const { content, parentTweetId, image, privateReply } = input;
 
+  if (!(await canReply({ ctx, input: { id: parentTweetId as string } }))) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "You can't reply to this tweet",
+    });
+  }
   const createRequest = createTweetRequest(
     content,
     parentTweetId,
-    session?.user?.id as string
+    image,
+    session?.user?.id as string,
+    privateReply
   );
+
   const tweet = await prisma.tweet.create(createRequest);
   return tweet;
+};
+
+const canReply = async ({ ctx, input }: GetTweetInputs) => {
+  const { session } = ctx;
+  if (!input.id) return true;
+  const tweet = await get({ ctx, input });
+  if (!tweet || !tweet.privateReply) {
+    return true;
+  }
+  return await isFollower({
+    ctx,
+    input: {
+      followerId: tweet.authorId,
+      followingId: session?.user?.id as string,
+    },
+  });
 };
 
 export const get = async ({ ctx, input }: GetTweetInputs) => {
