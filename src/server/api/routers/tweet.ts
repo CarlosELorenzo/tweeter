@@ -3,12 +3,12 @@ import {
   interactionHandler,
   InteractionType,
   list,
-} from "../../../utils/api/tweet";
+} from "@utils/api/tweet";
 import {
   listTweetSchema,
   tweetActionSchema,
   tweetSchema,
-} from "../../../utils/schemas/tweet";
+} from "@utils/schemas/tweet";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const tweetRouter = createTRPCRouter({
